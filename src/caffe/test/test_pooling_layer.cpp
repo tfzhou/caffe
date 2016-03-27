@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "glog/stl_logging.h"
 
 #include "caffe/blob.hpp"
 #include "caffe/common.hpp"
@@ -9,6 +10,10 @@
 
 #ifdef USE_CUDNN
 #include "caffe/layers/cudnn_pooling_layer.hpp"
+#endif
+
+#ifdef USE_NNPACK
+#include "caffe/layers/nnpack_pooling_layer.hpp"
 #endif
 
 #include "caffe/test/test_caffe_main.hpp"
@@ -1180,6 +1185,45 @@ TYPED_TEST(CuDNNPoolingLayerTest, TestGradientAvePaddedCuDNN) {
   }
 }
 
+#endif
+
+#ifdef USE_NNPACK
+TYPED_TEST(PoolingLayerTest, TestReferenceNNPACK) {
+  typedef typename TypeParam::Dtype Dtype;
+  if (!Caffe::nnpack_supported<Dtype>()) {
+    LOG(INFO) << "Unsupported CPU, skipping";
+    return;
+  }
+
+  FillerParameter filler_param;
+  GaussianFiller<Dtype> filler(filler_param);
+  this->blob_bottom_->Reshape(2, 1, 120, 120);
+
+  LayerParameter layer_param;
+  PoolingParameter* pooling_param = layer_param.mutable_pooling_param();
+  filler.Fill(this->blob_bottom_);
+  pooling_param->set_kernel_h(2);
+  pooling_param->set_kernel_w(2);
+  pooling_param->set_stride(2);
+  pooling_param->set_pool(PoolingParameter_PoolMethod_MAX);
+
+  // Reference
+  PoolingLayer<Dtype> ref_layer(layer_param);
+  ref_layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
+  ref_layer.Forward(this->blob_bottom_vec_, this->blob_top_vec_);
+  Blob<Dtype> top_ref;
+  top_ref.CopyFrom(*this->blob_top_vec_[0], false, true);
+  LOG(INFO) << "Top Ref shape: " << top_ref.shape();
+
+  // NNPACK
+  NNPackPoolingLayer<Dtype> layer(layer_param);
+  layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
+  layer.Forward(this->blob_bottom_vec_, this->blob_top_vec_);
+  CHECK_EQ(top_ref.shape(), this->blob_top_vec_[0]->shape());
+  for (auto i = 0; i < top_ref.count(); ++i) {
+    EXPECT_EQ(this->blob_top_vec_[0]->cpu_data()[i], top_ref.cpu_data()[i]);
+  }
+}
 #endif
 
 }  // namespace caffe

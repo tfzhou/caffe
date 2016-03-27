@@ -7,6 +7,10 @@
 #include "caffe/filler.hpp"
 #include "caffe/layers/inner_product_layer.hpp"
 
+#ifdef USE_NNPACK
+#include "caffe/layers/nnpack_inner_product_layer.hpp"
+#endif
+
 #include "caffe/test/test_caffe_main.hpp"
 #include "caffe/test/test_gradient_check_util.hpp"
 
@@ -387,5 +391,69 @@ TYPED_TEST(InnerProductLayerTest, TestBackwardTranspose) {
     LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
+
+#ifdef USE_NNPACK
+TYPED_TEST(InnerProductLayerTest, TestGradientNNPACK) {
+  typedef typename TypeParam::Dtype Dtype;
+  if (!Caffe::nnpack_supported<Dtype>()) {
+    LOG(INFO) << "Unsupported CPU, skipping";
+    return;
+  }
+
+  this->blob_bottom_vec_.push_back(this->blob_bottom_);
+  bool IS_VALID_CUDA = false;
+#ifndef CPU_ONLY
+  IS_VALID_CUDA = CAFFE_TEST_CUDA_PROP.major >= 2;
+#endif
+  if (Caffe::mode() == Caffe::CPU ||
+      sizeof(Dtype) == 4 || IS_VALID_CUDA) {
+    LayerParameter layer_param;
+    InnerProductParameter* inner_product_param =
+        layer_param.mutable_inner_product_param();
+    inner_product_param->set_num_output(10);
+    inner_product_param->mutable_weight_filler()->set_type("gaussian");
+    inner_product_param->mutable_bias_filler()->set_type("gaussian");
+    inner_product_param->mutable_bias_filler()->set_min(1);
+    inner_product_param->mutable_bias_filler()->set_max(2);
+    NNPackInnerProductLayer<Dtype> layer(layer_param);
+    GradientChecker<Dtype> checker(1e-2, 1e-3);
+    checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
+        this->blob_top_vec_);
+  } else {
+    LOG(ERROR) << "Skipping test due to old architecture.";
+  }
+}
+
+TYPED_TEST(InnerProductLayerTest, TestGradientNoBatchNNPACK) {
+  typedef typename TypeParam::Dtype Dtype;
+  if (!Caffe::nnpack_supported<Dtype>()) {
+    LOG(INFO) << "Unsupported CPU, skipping";
+    return;
+  }
+
+  this->blob_bottom_vec_.push_back(this->blob_bottom_nobatch_);
+  bool IS_VALID_CUDA = false;
+#ifndef CPU_ONLY
+  IS_VALID_CUDA = CAFFE_TEST_CUDA_PROP.major >= 2;
+#endif
+  if (Caffe::mode() == Caffe::CPU ||
+      sizeof(Dtype) == 4 || IS_VALID_CUDA) {
+    LayerParameter layer_param;
+    InnerProductParameter* inner_product_param =
+        layer_param.mutable_inner_product_param();
+    inner_product_param->set_num_output(10);
+    inner_product_param->mutable_weight_filler()->set_type("gaussian");
+    inner_product_param->mutable_bias_filler()->set_type("gaussian");
+    inner_product_param->mutable_bias_filler()->set_min(1);
+    inner_product_param->mutable_bias_filler()->set_max(2);
+    NNPackInnerProductLayer<Dtype> layer(layer_param);
+    GradientChecker<Dtype> checker(1e-2, 1e-3);
+    checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
+        this->blob_top_vec_);
+  } else {
+    LOG(ERROR) << "Skipping test due to old architecture.";
+  }
+}
+#endif
 
 }  // namespace caffe

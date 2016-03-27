@@ -17,6 +17,11 @@
 #	possibility of simultaneous read and write
 # ALLOW_LMDB_NOLOCK := 1
 
+# NNPACK acceleration switch (uncomment to build with NNPACK).
+# USE_NNPACK := 1
+# NNPACK_INCLUDE := /path/to/NNPACK/include
+# NNPACK_LIB := /path/to/nnpack/NNPACK/lib
+
 # Uncomment if you're using OpenCV 3
 # OPENCV_VERSION := 3
 

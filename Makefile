@@ -334,6 +334,15 @@ ifeq ($(USE_NCCL), 1)
 	COMMON_FLAGS += -DUSE_NCCL
 endif
 
+# NNPACK acceleration configuration.
+ifeq ($(USE_NNPACK), 1)
+	LIBRARIES += nnpack
+	COMMON_FLAGS += -DUSE_NNPACK
+	INCLUDE_DIRS += $(NNPACK_INCLUDE)
+	INCLUDE_DIRS += $(NNPACK_INCLUDE)/../third-party/pthreadpool/include
+	LIBRARY_DIRS += $(NNPACK_LIB)
+endif
+
 # configure IO libraries
 ifeq ($(USE_OPENCV), 1)
 	COMMON_FLAGS += -DUSE_OPENCV

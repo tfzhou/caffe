@@ -92,6 +92,14 @@ if(USE_NCCL)
   add_definitions(-DUSE_NCCL)
 endif()
 
+# ---[ NNPACK
+if(USE_NNPACK)
+  find_package(NNPACK REQUIRED)
+  include_directories(SYSTEM ${NNPACK_INCLUDE_DIR})
+  include_directories(SYSTEM ${NNPACK_INCLUDE_DIR}/../third-party/pthreadpool/include)
+  list(APPEND Caffe_LINKER_LIBS ${NNPACK_LIB})
+endif()
+
 # ---[ OpenCV
 if(USE_OPENCV)
   find_package(OpenCV QUIET COMPONENTS core highgui imgproc imgcodecs)

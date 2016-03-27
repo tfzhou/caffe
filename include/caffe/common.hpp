@@ -18,6 +18,10 @@
 
 #include "caffe/util/device_alternate.hpp"
 
+#ifdef USE_NNPACK
+#include "caffe/nnpack_pool.h"
+#endif
+
 // Convert macro to string
 #define STRINGIFY(m) #m
 #define AS_STRING(m) STRINGIFY(m)
@@ -138,6 +142,13 @@ class Caffe {
   }
 #endif
 
+#ifdef USE_NNPACK
+  template<typename Dtype> static bool nnpack_supported();
+  inline static pthreadpool_t nnpack_threadpool() {
+    return Get().nnpack_threadpool_.pool();
+  }
+#endif
+
   // Returns the mode: running on CPU or GPU.
   inline static Brew mode() { return Get().mode_; }
   // The setters for the variables
@@ -180,6 +191,10 @@ class Caffe {
   int solver_count_;
   int solver_rank_;
   bool multiprocess_;
+
+#ifdef USE_NNPACK
+  NNPACKPool nnpack_threadpool_;
+#endif
 
  private:
   // The private constructor to avoid duplicate instantiation.

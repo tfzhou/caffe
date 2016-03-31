@@ -1,5 +1,5 @@
 #ifdef USE_NNPACK
-#include "nnpack_inner_product_layer.hpp"
+#include "caffe/layers/nnpack_inner_product_layer.hpp"
 #include "nnpack.h"
 
 namespace caffe {

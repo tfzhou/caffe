@@ -95,9 +95,8 @@ endif()
 # ---[ NNPACK
 if(USE_NNPACK)
   find_package(NNPACK REQUIRED)
-  include_directories(SYSTEM ${NNPACK_INCLUDE_DIR})
-  include_directories(SYSTEM ${NNPACK_INCLUDE_DIR}/../third-party/pthreadpool/include)
-  list(APPEND Caffe_LINKER_LIBS ${NNPACK_LIB})
+  include_directories(SYSTEM ${NNPACK_INCLUDE_DIR} ${PTHREADPOOL_INCLUDE_DIR})
+  list(APPEND Caffe_LINKER_LIBS ${NNPACK_LIBRARIES} ${PTHREADPOOL_LIBRARIES})
 endif()
 
 # ---[ OpenCV

@@ -1434,5 +1434,5 @@ message NNPACKConvolutionParameter {
     RECOMPUTE = 0;
     REUSE = 1;
   }
-  optional KernelTransformStrategy kernel_transform_strategy = 2 [default=REUSE];
+  optional KernelTransformStrategy kernel_transform_strategy = 2 [default=RECOMPUTE];
 }

@@ -336,10 +336,10 @@ endif
 
 # NNPACK acceleration configuration.
 ifeq ($(USE_NNPACK), 1)
-	LIBRARIES += nnpack
+	LIBRARIES += nnpack pthreadpool
 	COMMON_FLAGS += -DUSE_NNPACK
 	INCLUDE_DIRS += $(NNPACK_INCLUDE)
-	INCLUDE_DIRS += $(NNPACK_INCLUDE)/../third-party/pthreadpool/include
+	INCLUDE_DIRS += $(NNPACK_INCLUDE)/../deps/pthreadpool/include
 	LIBRARY_DIRS += $(NNPACK_LIB)
 endif
 

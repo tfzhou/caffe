@@ -33,18 +33,18 @@ nnp_convolution_algorithm nnp_algorithm(NNPACKConvolutionParameter_Algorithm alg
   return algorithm;
 }
 
-nnp_convolution_kernel_transform_strategy nnp_kts(
+nnp_convolution_transform_strategy nnp_kts(
     NNPACKConvolutionParameter_KernelTransformStrategy kts) {
   auto kernel_transform_strategy =
-      nnp_convolution_kernel_transform_strategy_reuse;
+      nnp_convolution_transform_strategy_compute;
   switch (kts) {
     case NNPACKConvolutionParameter_KernelTransformStrategy_RECOMPUTE:
       kernel_transform_strategy =
-          nnp_convolution_kernel_transform_strategy_recompute;
+          nnp_convolution_transform_strategy_compute;
       break;
     case NNPACKConvolutionParameter_KernelTransformStrategy_REUSE: {
       kernel_transform_strategy =
-          nnp_convolution_kernel_transform_strategy_reuse;
+          nnp_convolution_transform_strategy_reuse;
       break;
     }
   }
@@ -71,6 +71,7 @@ void caffe_nnp_convolution_forward(
   const nnp_size kernel_size = {
       .width = static_cast<size_t>(weights.width()),
       .height = static_cast<size_t>(weights.height())};
+  const nnp_size output_subsampling = { 1, 1 };
   const nnp_padding padding = {.top = static_cast<size_t>(pad.cpu_data()[0]),
                                .right = static_cast<size_t>(pad.cpu_data()[1]),
                                .bottom = static_cast<size_t>(pad.cpu_data()[0]),
@@ -89,6 +90,7 @@ void caffe_nnp_convolution_forward(
         input_size,
         padding,
         kernel_size,
+        output_subsampling,
         bottom.cpu_data(),
         weights.cpu_data(),
         bias.cpu_data(),

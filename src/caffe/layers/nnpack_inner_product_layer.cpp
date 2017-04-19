@@ -19,7 +19,7 @@ void NNPackInnerProductLayer<float>::Forward_cpu(
   CHECK_EQ(top.size(), 1);
   CHECK_EQ(bottom.size(), 1);
   if (M_ == 1) {
-    const auto status = nnp_fully_connected_inference(
+    const nnp_status status = nnp_fully_connected_inference(
         K_,
         N_,
         bottom[0]->cpu_data(),
@@ -28,7 +28,7 @@ void NNPackInnerProductLayer<float>::Forward_cpu(
         Caffe::nnpack_threadpool());
     CHECK_EQ(status, nnp_status_success);
   } else {
-    const auto status = nnp_fully_connected_output(
+    const nnp_status status = nnp_fully_connected_output(
         M_,
         K_,
         N_,
@@ -36,7 +36,7 @@ void NNPackInnerProductLayer<float>::Forward_cpu(
         this->blobs_[0]->cpu_data(),
         top[0]->mutable_cpu_data(),
         Caffe::nnpack_threadpool(),
-        nullptr);
+        NULL);
     CHECK_EQ(status, nnp_status_success);
   }
   if (bias_term_) {

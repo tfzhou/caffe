@@ -53,7 +53,7 @@ void NNPackPoolingLayer<float>::Forward_cpu(
     VLOG(1) << "Pooling Stride: " << pooling_stride.width << ", "
             << pooling_stride.height;
 
-    const auto status = nnp_max_pooling_output(
+    const nnp_status status = nnp_max_pooling_output(
         bottom[0]->num(),
         bottom[0]->channels(),
         input_size,

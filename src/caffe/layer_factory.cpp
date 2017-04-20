@@ -33,6 +33,7 @@
 #include "caffe/layers/nnpack_convolution_layer.hpp"
 #include "caffe/layers/nnpack_pooling_layer.hpp"
 #include "caffe/layers/nnpack_inner_product_layer.hpp"
+#include "caffe/layers/nnpack_relu_layer.hpp"
 #endif
 
 #ifdef WITH_PYTHON_LAYER
@@ -221,6 +222,10 @@ shared_ptr<Layer<Dtype> > GetReLULayer(const LayerParameter& param) {
 #ifdef USE_CUDNN
   } else if (engine == ReLUParameter_Engine_CUDNN) {
     return shared_ptr<Layer<Dtype> >(new CuDNNReLULayer<Dtype>(param));
+#endif
+#ifdef USE_NNPACK
+  } else if (engine == ReLUParameter_Engine_NNPACK) {
+    return shared_ptr<Layer<Dtype> >(new NNPackReLULayer<Dtype>(param));
 #endif
   } else {
     LOG(FATAL) << "Layer " << param.name() << " has unknown engine.";

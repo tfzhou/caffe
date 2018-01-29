@@ -405,6 +405,7 @@ message LayerParameter {
   optional ThresholdParameter threshold_param = 128;
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
+  optional FlipParameter flip_param = 212;
 
   optional NNPACKConvolutionParameter nnpack_convolution_param = 204;
 }
@@ -1436,4 +1437,9 @@ message NNPACKConvolutionParameter {
     REUSE = 1;
   }
   optional KernelTransformStrategy kernel_transform_strategy = 2 [default=RECOMPUTE];
+}
+
+message FlipParameter {
+    optional bool flip_width = 1 [default = true];
+    optional bool flip_height = 2 [default = false];
 }

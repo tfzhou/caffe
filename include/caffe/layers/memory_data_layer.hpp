@@ -43,12 +43,14 @@ class MemoryDataLayer : public BaseDataLayer<Dtype> {
   int channels() { return channels_; }
   int height() { return height_; }
   int width() { return width_; }
+  bool transpose() { return transpose_; }
 
  protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
   int batch_size_, channels_, height_, width_, size_;
+  bool transpose_;
   Dtype* data_;
   Dtype* labels_;
   int n_;

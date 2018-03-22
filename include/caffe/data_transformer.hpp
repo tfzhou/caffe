@@ -62,7 +62,8 @@ class DataTransformer {
    *    set_cpu_data() is used. See memory_layer.cpp for an example.
    */
   void Transform(const vector<cv::Mat> & mat_vector,
-                Blob<Dtype>* transformed_blob);
+                Blob<Dtype>* transformed_blob,
+                bool transpose = false);
 
   /**
    * @brief Applies the transformation defined in the data layer's
@@ -74,7 +75,9 @@ class DataTransformer {
    *    This is destination blob. It can be part of top blob's data if
    *    set_cpu_data() is used. See image_data_layer.cpp for an example.
    */
-  void Transform(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
+  void Transform(const cv::Mat& cv_img,
+                Blob<Dtype>* transformed_blob,
+                bool transpose = false);
 #endif  // USE_OPENCV
 
   /**

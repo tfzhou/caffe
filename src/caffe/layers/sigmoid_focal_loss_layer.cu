@@ -58,7 +58,7 @@ void SigmoidFocalLossLayer<Dtype>::Forward_gpu(
   Dtype* count_data = bottom[1]->mutable_gpu_diff();
   Dtype valid_count;
   // NOLINT_NEXT_LINE(whitespace/operators)
-  SigmoidCrossEntropyLossForwardGPU<Dtype><<<CAFFE_GET_BLOCKS(count),
+  SigmoidFocalLossForwardGPU<Dtype><<<CAFFE_GET_BLOCKS(count),
       CAFFE_CUDA_NUM_THREADS>>>(count, input_data, target, loss_data,
       has_ignore_label_, ignore_label_, count_data);
   // Only launch another CUDA kernel if we actually need the valid count.
@@ -96,7 +96,7 @@ void SigmoidFocalLossLayer<Dtype>::Backward_gpu(
     // Zero out gradient of ignored targets.
     if (has_ignore_label_) {
       // NOLINT_NEXT_LINE(whitespace/operators)
-      SigmoidCrossEntropyLossIgnoreDiffGPU<Dtype><<<CAFFE_GET_BLOCKS(count),
+      SigmoidFocalLossIgnoreDiffGPU<Dtype><<<CAFFE_GET_BLOCKS(count),
         CAFFE_CUDA_NUM_THREADS>>>(count, ignore_label_, target, bottom_diff);
     }
     // Scale down gradient
